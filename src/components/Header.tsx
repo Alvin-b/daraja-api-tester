@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Zap, TestTube2 } from "lucide-react";
+import { Zap, Radio } from "lucide-react";
 
 const Header = () => {
   return (
@@ -21,13 +21,13 @@ const Header = () => {
           </div>
           
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="gap-1.5 border-primary/30 text-primary">
-              <TestTube2 className="h-3 w-3" />
-              Sandbox Mode
+            <Badge className="gap-1.5 bg-primary/20 text-primary border-primary/30">
+              <Radio className="h-3 w-3" />
+              Production
             </Badge>
             <div className="hidden sm:flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-primary animate-pulse-glow" />
-              <span className="text-xs text-muted-foreground">Connected</span>
+              <span className="text-xs text-muted-foreground">Live</span>
             </div>
           </div>
         </div>
