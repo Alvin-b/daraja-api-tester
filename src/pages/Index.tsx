@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import STKPushForm from "@/components/STKPushForm";
 import APIResponse from "@/components/APIResponse";
+import TransactionQuery from "@/components/TransactionQuery";
 
 interface STKPushData {
   phoneNumber: string;
@@ -87,6 +88,10 @@ const Index = () => {
         <div className="grid gap-6 lg:grid-cols-2">
           <STKPushForm onSubmit={handleSTKPush} isLoading={isLoading} />
           <APIResponse response={response} error={error} isLoading={isLoading} />
+        </div>
+
+        <div className="mt-6">
+          <TransactionQuery />
         </div>
 
         <footer className="mt-12 text-center">
