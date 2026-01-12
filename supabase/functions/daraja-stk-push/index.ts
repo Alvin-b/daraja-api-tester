@@ -26,7 +26,7 @@ async function getAccessToken(): Promise<string> {
   const auth = btoa(`${consumerKey}:${consumerSecret}`);
   
   const response = await fetch(
-    'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
+    'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
     {
       method: 'GET',
       headers: {
@@ -146,9 +146,9 @@ serve(async (req) => {
 
     console.log('STK Push payload:', JSON.stringify(stkPayload, null, 2));
 
-    // Make STK Push request
+    // Make STK Push request - PRODUCTION endpoint
     const stkResponse = await fetch(
-      'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
+      'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest',
       {
         method: 'POST',
         headers: {
