@@ -130,6 +130,9 @@ serve(async (req) => {
     console.log('Password (first 20 chars):', password.substring(0, 20) + '...');
     console.log('Initiating STK Push for:', formattedPhone);
 
+    // For Buy Goods: BusinessShortCode = Store (5512238), PartyB = Till (4159923)
+    const tillNumber = '4159923';
+    
     const stkPayload = {
       BusinessShortCode: shortcode,
       Password: password,
@@ -137,7 +140,7 @@ serve(async (req) => {
       TransactionType: 'CustomerBuyGoodsOnline',
       Amount: Math.round(amount),
       PartyA: formattedPhone,
-      PartyB: shortcode,
+      PartyB: tillNumber,
       PhoneNumber: formattedPhone,
       CallBackURL: callbackUrl,
       AccountReference: accountReference.substring(0, 12),
