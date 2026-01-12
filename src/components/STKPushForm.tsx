@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Smartphone, DollarSign, FileText, Send, Loader2 } from "lucide-react";
+import { Smartphone, DollarSign, Send, Loader2 } from "lucide-react";
 
 interface STKPushFormProps {
   onSubmit: (data: {
@@ -18,16 +18,16 @@ interface STKPushFormProps {
 const STKPushForm = ({ onSubmit, isLoading }: STKPushFormProps) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [amount, setAmount] = useState("");
-  const [accountReference, setAccountReference] = useState("");
-  const [transactionDesc, setTransactionDesc] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Auto-generate account reference and description
+    const accountRef = `TXN${Date.now().toString().slice(-8)}`;
     onSubmit({
       phoneNumber,
       amount: parseFloat(amount),
-      accountReference,
-      transactionDesc: transactionDesc || "Payment",
+      accountReference: accountRef,
+      transactionDesc: "Payment",
     });
   };
 
@@ -54,13 +54,13 @@ const STKPushForm = ({ onSubmit, isLoading }: STKPushFormProps) => {
             <Input
               id="phone"
               type="tel"
-              placeholder="254712345678"
+              placeholder="0712345678 or 254712345678"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               required
-              className="font-mono bg-input border-border focus:border-primary focus:ring-primary"
+              className="font-mono bg-input border-border focus:border-primary focus:ring-primary text-lg h-12"
             />
-            <p className="text-xs text-muted-foreground">Format: 254XXXXXXXXX</p>
+            <p className="text-xs text-muted-foreground">Enter M-Pesa registered phone number</p>
           </div>
 
           <div className="space-y-2">
@@ -71,63 +71,28 @@ const STKPushForm = ({ onSubmit, isLoading }: STKPushFormProps) => {
             <Input
               id="amount"
               type="number"
-              placeholder="100"
+              placeholder="Enter amount"
               min="1"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
-              className="font-mono bg-input border-border focus:border-primary focus:ring-primary"
+              className="font-mono bg-input border-border focus:border-primary focus:ring-primary text-lg h-12"
             />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="reference" className="flex items-center gap-2 text-sm font-medium">
-              <FileText className="h-4 w-4 text-muted-foreground" />
-              Account Reference
-            </Label>
-            <Input
-              id="reference"
-              type="text"
-              placeholder="INV-001"
-              value={accountReference}
-              onChange={(e) => setAccountReference(e.target.value)}
-              required
-              maxLength={12}
-              className="font-mono bg-input border-border focus:border-primary focus:ring-primary"
-            />
-            <p className="text-xs text-muted-foreground">Max 12 characters</p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description" className="flex items-center gap-2 text-sm font-medium">
-              <FileText className="h-4 w-4 text-muted-foreground" />
-              Transaction Description
-            </Label>
-            <Input
-              id="description"
-              type="text"
-              placeholder="Payment for services"
-              value={transactionDesc}
-              onChange={(e) => setTransactionDesc(e.target.value)}
-              maxLength={20}
-              className="font-mono bg-input border-border focus:border-primary focus:ring-primary"
-            />
-            <p className="text-xs text-muted-foreground">Optional, max 20 characters</p>
           </div>
 
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all"
+            className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base transition-all"
           >
             {isLoading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Sending...
               </>
             ) : (
               <>
-                <Send className="mr-2 h-4 w-4" />
+                <Send className="mr-2 h-5 w-5" />
                 Send STK Push
               </>
             )}
