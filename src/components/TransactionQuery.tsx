@@ -54,8 +54,10 @@ const TransactionQuery = () => {
     
     if (resultCode === '0') {
       return <CheckCircle2 className="h-5 w-5 text-green-500" />;
-    } else if (resultCode === '1032' || resultCode === '1037') {
+    } else if (resultCode === '1032' || resultCode === '1037' || resultCode === '1019') {
       return <Clock className="h-5 w-5 text-yellow-500" />;
+    } else if (resultCode === '2002') {
+      return <AlertTriangle className="h-5 w-5 text-orange-500" />;
     } else {
       return <XCircle className="h-5 w-5 text-destructive" />;
     }
