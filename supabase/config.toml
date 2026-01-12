@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.daraja-stk-push]
 verify_jwt = false
+
+[functions.ena-coach-agent]
+verify_jwt = false
