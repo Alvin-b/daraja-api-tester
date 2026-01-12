@@ -20,6 +20,9 @@ async function getAccessToken(): Promise<string> {
     throw new Error('Daraja credentials not configured');
   }
 
+  console.log('Consumer Key length:', consumerKey.length);
+  console.log('Consumer Secret length:', consumerSecret.length);
+
   const auth = btoa(`${consumerKey}:${consumerSecret}`);
   
   const response = await fetch(
@@ -32,14 +35,21 @@ async function getAccessToken(): Promise<string> {
     }
   );
 
+  const responseText = await response.text();
+  console.log('OAuth response status:', response.status);
+  console.log('OAuth response:', responseText);
+
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Token error:', errorText);
-    throw new Error(`Failed to get access token: ${response.status}`);
+    throw new Error(`Failed to get access token: ${response.status} - ${responseText}`);
   }
 
-  const data = await response.json();
-  console.log('Access token obtained successfully');
+  const data = JSON.parse(responseText);
+  
+  if (!data.access_token) {
+    throw new Error(`No access token in response: ${responseText}`);
+  }
+  
+  console.log('Access token obtained, length:', data.access_token.length);
   return data.access_token;
 }
 
@@ -95,9 +105,13 @@ serve(async (req) => {
     const passkey = Deno.env.get('DARAJA_PASSKEY');
     const callbackUrl = Deno.env.get('DARAJA_CALLBACK_URL');
 
+    console.log('Shortcode:', shortcode);
+    console.log('Passkey length:', passkey?.length);
+    console.log('Callback URL:', callbackUrl);
+
     if (!shortcode || !passkey || !callbackUrl) {
       return new Response(
-        JSON.stringify({ error: 'Daraja configuration incomplete' }),
+        JSON.stringify({ error: 'Daraja configuration incomplete. Check DARAJA_SHORTCODE, DARAJA_PASSKEY, DARAJA_CALLBACK_URL' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -112,7 +126,25 @@ serve(async (req) => {
     // Format phone number
     const formattedPhone = formatPhoneNumber(phoneNumber);
     
+    console.log('Timestamp:', timestamp);
+    console.log('Password (first 20 chars):', password.substring(0, 20) + '...');
     console.log('Initiating STK Push for:', formattedPhone);
+
+    const stkPayload = {
+      BusinessShortCode: shortcode,
+      Password: password,
+      Timestamp: timestamp,
+      TransactionType: 'CustomerPayBillOnline',
+      Amount: Math.round(amount),
+      PartyA: formattedPhone,
+      PartyB: shortcode,
+      PhoneNumber: formattedPhone,
+      CallBackURL: callbackUrl,
+      AccountReference: accountReference.substring(0, 12),
+      TransactionDesc: (transactionDesc || 'Payment').substring(0, 13),
+    };
+
+    console.log('STK Push payload:', JSON.stringify(stkPayload, null, 2));
 
     // Make STK Push request
     const stkResponse = await fetch(
@@ -123,34 +155,33 @@ serve(async (req) => {
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          BusinessShortCode: shortcode,
-          Password: password,
-          Timestamp: timestamp,
-          TransactionType: 'CustomerPayBillOnline',
-          Amount: Math.round(amount),
-          PartyA: formattedPhone,
-          PartyB: shortcode,
-          PhoneNumber: formattedPhone,
-          CallBackURL: callbackUrl,
-          AccountReference: accountReference,
-          TransactionDesc: transactionDesc || 'Payment',
-        }),
+        body: JSON.stringify(stkPayload),
       }
     );
 
-    const stkData = await stkResponse.json();
-    console.log('STK Push response:', stkData);
+    const stkText = await stkResponse.text();
+    console.log('STK Push response status:', stkResponse.status);
+    console.log('STK Push response:', stkText);
+
+    let stkData;
+    try {
+      stkData = JSON.parse(stkText);
+    } catch {
+      stkData = { rawResponse: stkText };
+    }
+
+    // Check for success based on ResponseCode
+    const isSuccess = stkData.ResponseCode === '0';
 
     return new Response(
       JSON.stringify({
-        success: stkResponse.ok,
+        success: isSuccess,
         data: stkData,
         timestamp,
         formattedPhone,
       }),
       { 
-        status: stkResponse.ok ? 200 : 400, 
+        status: isSuccess ? 200 : 400, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );
