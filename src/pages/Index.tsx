@@ -91,7 +91,7 @@ const Index = () => {
 
         <footer className="mt-12 text-center">
           <p className="text-xs text-muted-foreground">
-            Using Safaricom Daraja API v1 • Sandbox Environment
+            Using Safaricom Daraja API v1 • Production Environment
           </p>
         </footer>
       </main>
