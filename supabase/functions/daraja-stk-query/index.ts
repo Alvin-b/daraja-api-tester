@@ -127,12 +127,14 @@ serve(async (req) => {
     // 1037 = Timeout waiting for user input
     // 1 = Insufficient funds
     // 2001 = Wrong PIN entered
+    // 2002 = Shortcode/passkey mismatch
     const resultCodeMeanings: Record<string, string> = {
       '0': 'Transaction successful',
       '1': 'Insufficient funds',
       '1032': 'Request cancelled by user',
       '1037': 'Timeout - no user response',
       '2001': 'Wrong PIN entered',
+      '2002': 'Shortcode/Passkey mismatch - credentials do not match',
       '1025': 'Invalid phone number',
       '1019': 'Transaction expired',
     };
