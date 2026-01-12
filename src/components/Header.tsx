@@ -1,0 +1,39 @@
+import { Badge } from "@/components/ui/badge";
+import { Zap, TestTube2 } from "lucide-react";
+
+const Header = () => {
+  return (
+    <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20">
+              <Zap className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground tracking-tight">
+                Daraja API Tester
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                M-Pesa STK Push Integration
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <Badge variant="outline" className="gap-1.5 border-primary/30 text-primary">
+              <TestTube2 className="h-3 w-3" />
+              Sandbox Mode
+            </Badge>
+            <div className="hidden sm:flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-primary animate-pulse-glow" />
+              <span className="text-xs text-muted-foreground">Connected</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;

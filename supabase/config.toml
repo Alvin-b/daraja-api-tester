@@ -1,1 +1,4 @@
 project_id = "ffslgzkcghlgpujpeddq"
+
+[functions.daraja-stk-push]
+verify_jwt = false
