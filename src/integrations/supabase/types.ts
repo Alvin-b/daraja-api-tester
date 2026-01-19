@@ -14,13 +14,150 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      route_schedules: {
+        Row: {
+          available_seats: number
+          created_at: string
+          departure_time: string
+          direction: string
+          id: string
+          route_id: string
+          total_seats: number
+          travel_date: string
+          updated_at: string
+        }
+        Insert: {
+          available_seats?: number
+          created_at?: string
+          departure_time: string
+          direction: string
+          id?: string
+          route_id: string
+          total_seats?: number
+          travel_date: string
+          updated_at?: string
+        }
+        Update: {
+          available_seats?: number
+          created_at?: string
+          departure_time?: string
+          direction?: string
+          id?: string
+          route_id?: string
+          total_seats?: number
+          travel_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "route_schedules_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      routes: {
+        Row: {
+          buses_per_day: number
+          created_at: string
+          departure_times: string[]
+          id: string
+          is_active: boolean
+          price: number
+          route_name: string
+          stops: string[]
+          total_seats_per_bus: number
+          updated_at: string
+        }
+        Insert: {
+          buses_per_day?: number
+          created_at?: string
+          departure_times: string[]
+          id?: string
+          is_active?: boolean
+          price: number
+          route_name: string
+          stops?: string[]
+          total_seats_per_bus?: number
+          updated_at?: string
+        }
+        Update: {
+          buses_per_day?: number
+          created_at?: string
+          departure_times?: string[]
+          id?: string
+          is_active?: boolean
+          price?: number
+          route_name?: string
+          stops?: string[]
+          total_seats_per_bus?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      book_seats: {
+        Args: {
+          p_departure_time: string
+          p_direction?: string
+          p_num_seats?: number
+          p_route_id: string
+          p_travel_date: string
+        }
+        Returns: {
+          available: number
+          message: string
+          success: boolean
+        }[]
+      }
+      check_availability: {
+        Args: {
+          p_departure_time?: string
+          p_direction?: string
+          p_route_name: string
+          p_travel_date: string
+        }
+        Returns: {
+          available_seats: number
+          departure_time: string
+          direction: string
+          price: number
+          route_id: string
+          route_name: string
+          total_seats: number
+        }[]
+      }
+      get_or_create_schedule: {
+        Args: {
+          p_departure_time: string
+          p_direction?: string
+          p_route_id: string
+          p_travel_date: string
+        }
+        Returns: {
+          available_seats: number
+          created_at: string
+          departure_time: string
+          direction: string
+          id: string
+          route_id: string
+          total_seats: number
+          travel_date: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "route_schedules"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       [_ in never]: never
