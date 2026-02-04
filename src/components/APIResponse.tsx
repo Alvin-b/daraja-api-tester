@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, Clock, Terminal } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CheckCircle2, XCircle, Clock, Terminal, RefreshCw, AlertCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface APIResponseProps {
   response: {
@@ -13,7 +16,47 @@ interface APIResponseProps {
   isLoading: boolean;
 }
 
+interface StatusResult {
+  success: boolean;
+  data: {
+    ResultCode: string;
+    ResultDesc: string;
+    CheckoutRequestID?: string;
+  };
+  resultMeaning?: string;
+}
+
+const RESULT_CODE_MEANINGS: Record<string, { label: string; variant: "success" | "warning" | "error" }> = {
+  "0": { label: "Payment Successful", variant: "success" },
+  "1": { label: "Insufficient Balance", variant: "error" },
+  "1032": { label: "Cancelled by User", variant: "warning" },
+  "1037": { label: "Timeout - Phone Unreachable", variant: "error" },
+  "2001": { label: "Wrong PIN Entered", variant: "error" },
+  "4999": { label: "Still Processing", variant: "warning" },
+};
+
 const APIResponse = ({ response, error, isLoading }: APIResponseProps) => {
+  const [statusResult, setStatusResult] = useState<StatusResult | null>(null);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+
+  const checkTransactionStatus = async () => {
+    if (!response?.data?.CheckoutRequestID) return;
+    
+    setIsCheckingStatus(true);
+    try {
+      const { data, error: queryError } = await supabase.functions.invoke('daraja-stk-query', {
+        body: { checkoutRequestId: response.data.CheckoutRequestID },
+      });
+      
+      if (queryError) throw queryError;
+      setStatusResult(data);
+    } catch (err) {
+      console.error('Status check error:', err);
+    } finally {
+      setIsCheckingStatus(false);
+    }
+  };
+
   const getStatusBadge = () => {
     if (isLoading) {
       return (
@@ -59,6 +102,10 @@ const APIResponse = ({ response, error, isLoading }: APIResponseProps) => {
     return JSON.stringify(obj, null, 2);
   };
 
+  const getResultMeaning = (resultCode: string) => {
+    return RESULT_CODE_MEANINGS[resultCode] || { label: `Unknown (${resultCode})`, variant: "warning" as const };
+  };
+
   return (
     <Card className="border-border/50 bg-card/80 backdrop-blur h-full">
       <CardHeader className="pb-4">
@@ -94,21 +141,66 @@ const APIResponse = ({ response, error, isLoading }: APIResponseProps) => {
         </div>
 
         {response?.data?.CheckoutRequestID && (
-          <div className="mt-4 space-y-2">
+          <div className="mt-4 space-y-3">
             <h4 className="text-sm font-medium text-foreground">Quick Info</h4>
             <div className="grid gap-2 text-sm">
               <div className="flex justify-between rounded-md bg-muted/30 px-3 py-2">
                 <span className="text-muted-foreground">Checkout Request ID:</span>
-                <span className="font-mono text-foreground">{response.data.CheckoutRequestID}</span>
+                <span className="font-mono text-foreground text-xs">{response.data.CheckoutRequestID}</span>
               </div>
               <div className="flex justify-between rounded-md bg-muted/30 px-3 py-2">
                 <span className="text-muted-foreground">Merchant Request ID:</span>
-                <span className="font-mono text-foreground">{response.data.MerchantRequestID}</span>
+                <span className="font-mono text-foreground text-xs">{response.data.MerchantRequestID}</span>
               </div>
               <div className="flex justify-between rounded-md bg-muted/30 px-3 py-2">
                 <span className="text-muted-foreground">Response Code:</span>
                 <span className="font-mono text-foreground">{response.data.ResponseCode}</span>
               </div>
+            </div>
+
+            {/* Status Checker */}
+            <div className="pt-2 border-t border-border">
+              <Button
+                onClick={checkTransactionStatus}
+                disabled={isCheckingStatus}
+                variant="outline"
+                className="w-full"
+              >
+                {isCheckingStatus ? (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    Checking Status...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    Check Payment Status
+                  </>
+                )}
+              </Button>
+
+              {statusResult && (
+                <div className="mt-3 p-3 rounded-lg bg-muted/50 border border-border">
+                  <div className="flex items-center gap-2 mb-2">
+                    {statusResult.data.ResultCode === "0" ? (
+                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    ) : statusResult.data.ResultCode === "4999" ? (
+                      <Clock className="h-5 w-5 text-muted-foreground" />
+                    ) : (
+                      <AlertCircle className="h-5 w-5 text-destructive" />
+                    )}
+                    <span className="font-medium">
+                      {getResultMeaning(statusResult.data.ResultCode).label}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {statusResult.data.ResultDesc}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Result Code: {statusResult.data.ResultCode}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
