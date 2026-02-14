@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      mikrotik_settings: {
+        Row: {
+          api_password: string
+          api_port: number
+          api_username: string
+          created_at: string
+          dns_name: string | null
+          hotspot_server: string
+          id: string
+          is_connected: boolean
+          last_connected_at: string | null
+          portal_url: string | null
+          router_ip: string
+          router_name: string
+          updated_at: string
+        }
+        Insert: {
+          api_password?: string
+          api_port?: number
+          api_username?: string
+          created_at?: string
+          dns_name?: string | null
+          hotspot_server?: string
+          id?: string
+          is_connected?: boolean
+          last_connected_at?: string | null
+          portal_url?: string | null
+          router_ip: string
+          router_name?: string
+          updated_at?: string
+        }
+        Update: {
+          api_password?: string
+          api_port?: number
+          api_username?: string
+          created_at?: string
+          dns_name?: string | null
+          hotspot_server?: string
+          id?: string
+          is_connected?: boolean
+          last_connected_at?: string | null
+          portal_url?: string | null
+          router_ip?: string
+          router_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       route_schedules: {
         Row: {
           available_seats: number
@@ -96,6 +144,145 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      wifi_packages: {
+        Row: {
+          created_at: string
+          duration_minutes: number
+          id: string
+          is_active: boolean
+          name: string
+          price: number
+          speed_limit: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes: number
+          id?: string
+          is_active?: boolean
+          name: string
+          price: number
+          speed_limit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+          speed_limit?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wifi_sessions: {
+        Row: {
+          bytes_in: number | null
+          bytes_out: number | null
+          created_at: string
+          expires_at: string
+          id: string
+          ip_address: string | null
+          is_active: boolean
+          mac_address: string | null
+          started_at: string
+          updated_at: string
+          username: string
+          voucher_id: string
+        }
+        Insert: {
+          bytes_in?: number | null
+          bytes_out?: number | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          ip_address?: string | null
+          is_active?: boolean
+          mac_address?: string | null
+          started_at?: string
+          updated_at?: string
+          username: string
+          voucher_id: string
+        }
+        Update: {
+          bytes_in?: number | null
+          bytes_out?: number | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          ip_address?: string | null
+          is_active?: boolean
+          mac_address?: string | null
+          started_at?: string
+          updated_at?: string
+          username?: string
+          voucher_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wifi_sessions_voucher_id_fkey"
+            columns: ["voucher_id"]
+            isOneToOne: false
+            referencedRelation: "wifi_vouchers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wifi_vouchers: {
+        Row: {
+          activated_at: string | null
+          amount_paid: number
+          checkout_request_id: string | null
+          code: string
+          created_at: string
+          duration_minutes: number
+          expires_at: string | null
+          id: string
+          mpesa_receipt: string | null
+          package_id: string
+          phone_number: string
+          status: string
+        }
+        Insert: {
+          activated_at?: string | null
+          amount_paid: number
+          checkout_request_id?: string | null
+          code: string
+          created_at?: string
+          duration_minutes: number
+          expires_at?: string | null
+          id?: string
+          mpesa_receipt?: string | null
+          package_id: string
+          phone_number: string
+          status?: string
+        }
+        Update: {
+          activated_at?: string | null
+          amount_paid?: number
+          checkout_request_id?: string | null
+          code?: string
+          created_at?: string
+          duration_minutes?: number
+          expires_at?: string | null
+          id?: string
+          mpesa_receipt?: string | null
+          package_id?: string
+          phone_number?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wifi_vouchers_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "wifi_packages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
