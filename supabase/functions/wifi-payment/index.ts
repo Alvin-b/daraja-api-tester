@@ -102,19 +102,19 @@ serve(async (req) => {
     const timestamp = getTimestamp();
     const password = btoa(`${shortcode}${passkey}${timestamp}`);
     const formattedPhone = formatPhoneNumber(phoneNumber);
-    const tillNumber = '4159923';
+    const paybillNumber = '522522';
 
     const stkPayload = {
       BusinessShortCode: shortcode,
       Password: password,
       Timestamp: timestamp,
-      TransactionType: 'CustomerBuyGoodsOnline',
+      TransactionType: 'CustomerPayBillOnline',
       Amount: Math.round(pkg.price),
       PartyA: formattedPhone,
-      PartyB: tillNumber,
+      PartyB: paybillNumber,
       PhoneNumber: formattedPhone,
       CallBackURL: callbackUrl,
-      AccountReference: 'WiFi',
+      AccountReference: '7718913',
       TransactionDesc: pkg.name.substring(0, 13),
     };
 
