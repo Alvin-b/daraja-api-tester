@@ -130,20 +130,20 @@ serve(async (req) => {
     console.log('Password (first 20 chars):', password.substring(0, 20) + '...');
     console.log('Initiating STK Push for:', formattedPhone);
 
-    // For Buy Goods: BusinessShortCode = Store (5512238), PartyB = Till (4159923)
-    const tillNumber = '4159923';
+    // KCB Paybill configuration
+    const paybillNumber = '522522';
     
     const stkPayload = {
       BusinessShortCode: shortcode,
       Password: password,
       Timestamp: timestamp,
-      TransactionType: 'CustomerBuyGoodsOnline',
+      TransactionType: 'CustomerPayBillOnline',
       Amount: Math.round(amount),
       PartyA: formattedPhone,
-      PartyB: tillNumber,
+      PartyB: paybillNumber,
       PhoneNumber: formattedPhone,
       CallBackURL: callbackUrl,
-      AccountReference: accountReference.substring(0, 12),
+      AccountReference: '7718913',
       TransactionDesc: (transactionDesc || 'Payment').substring(0, 13),
     };
 
