@@ -147,7 +147,9 @@ export type Database = {
       }
       wifi_packages: {
         Row: {
+          country_code: string
           created_at: string
+          currency: string
           duration_minutes: number
           id: string
           is_active: boolean
@@ -157,7 +159,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          country_code?: string
           created_at?: string
+          currency?: string
           duration_minutes: number
           id?: string
           is_active?: boolean
@@ -167,7 +171,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          country_code?: string
           created_at?: string
+          currency?: string
           duration_minutes?: number
           id?: string
           is_active?: boolean
@@ -238,11 +244,14 @@ export type Database = {
           checkout_request_id: string | null
           code: string
           created_at: string
+          currency: string
           duration_minutes: number
           expires_at: string | null
           id: string
           mpesa_receipt: string | null
           package_id: string
+          payment_provider: string
+          paystack_reference: string | null
           phone_number: string
           status: string
         }
@@ -252,11 +261,14 @@ export type Database = {
           checkout_request_id?: string | null
           code: string
           created_at?: string
+          currency?: string
           duration_minutes: number
           expires_at?: string | null
           id?: string
           mpesa_receipt?: string | null
           package_id: string
+          payment_provider?: string
+          paystack_reference?: string | null
           phone_number: string
           status?: string
         }
@@ -266,11 +278,14 @@ export type Database = {
           checkout_request_id?: string | null
           code?: string
           created_at?: string
+          currency?: string
           duration_minutes?: number
           expires_at?: string | null
           id?: string
           mpesa_receipt?: string | null
           package_id?: string
+          payment_provider?: string
+          paystack_reference?: string | null
           phone_number?: string
           status?: string
         }
